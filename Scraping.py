@@ -8,12 +8,13 @@ warnings.filterwarnings("ignore")
 
 ##--------------------------------------------------------------------------------------------##
 # PDF data scraping with tabula
-df_1 = tabula.read_pdf('2021/Jan_Fev_2021.pdf', pages = '11-18')
-df_2 = tabula.read_pdf('2021/Mar_Abr_2021.pdf', pages = '11-18')
-df_3 = tabula.read_pdf('2021/Mai_Jun_2021.pdf', pages = '11-18')
-df_4 = tabula.read_pdf('2021/Jul_Ago_2021.pdf', pages = '11-18')
-df_5 = tabula.read_pdf('2021/Set_Out_2021.pdf', pages = '11-18')
-df_6 = tabula.read_pdf('2021/Nov_Dez_2021.pdf', pages = '11-18')
+Ano = 2021
+df_1 = tabula.read_pdf(f'Dados/{Ano}/Jan_Fev_{Ano}.pdf', pages = '11-18')
+df_2 = tabula.read_pdf(f'Dados/{Ano}/Mar_Abr_{Ano}.pdf', pages = '11-18')
+df_3 = tabula.read_pdf(f'Dados/{Ano}/Mai_Jun_{Ano}.pdf', pages = '11-18')
+df_4 = tabula.read_pdf(f'Dados/{Ano}/Jul_Ago_{Ano}.pdf', pages = '11-18')
+df_5 = tabula.read_pdf(f'Dados/{Ano}/Set_Out_{Ano}.pdf', pages = '11-18')
+df_6 = tabula.read_pdf(f'Dados/{Ano}/Nov_Dez_{Ano}.pdf', pages = '11-18')
 
 # Checking the number of Dataframes that were recognized
 print('\nO scraping de dados foi concluido com sucesso.')
@@ -36,13 +37,14 @@ def preparar_coluna(tabela):
 
 
 # Concatenate dataframe list
-def concatenar(tabela):
+def concatenar(tabela, ano):
     global dataframe
     dataframe = pd.concat(tabela)
     dataframe.index = range(dataframe.shape[0])
 
-    dataframe['Dados'] = dataframe['Dados'].str.replace('2021 ', 'Ano')
+    dataframe['Dados'] = dataframe['Dados'].str.replace(ano , 'Ano')
     dataframe['Dados'] = dataframe['Dados'].str.replace(' =', '')
+    dataframe = dataframe[['Dados']]
 
 
 # Set the category in which the vehicle is
@@ -114,7 +116,7 @@ def ajustes_finais(tabela, mes_1, mes_2, ano):
 def scraping(dataframe_original, mes_1, mes_2, ano):
     global dataframe
     preparar_coluna(dataframe_original)
-    concatenar(dataframe)
+    concatenar(dataframe, ano)
     definir_categorias(dataframe)
     expandir_dados(dataframe, mes_1, mes_2)
     ajustes_finais(dataframe, mes_1, mes_2, ano)
@@ -125,12 +127,12 @@ def scraping(dataframe_original, mes_1, mes_2, ano):
 ##--------------------------------------------------------------------------------------------##
 # Handling the PDF scraping data
 # Running the scraping function to each PDF data
-df_1 = scraping(df_1, mes_1 = 'Janeiro', mes_2 = 'Fevereiro', ano = '2021')
-df_2 = scraping(df_2, mes_1 = 'Março', mes_2 = 'Abril', ano = '2021')
-df_3 = scraping(df_3, mes_1 = 'Maio', mes_2 = 'Junho', ano = '2021')
-df_4 = scraping(df_4, mes_1 = 'Julho', mes_2 = 'Agosto', ano = '2021')
-df_5 = scraping(df_5, mes_1 = 'Setembro', mes_2 = 'Outubro', ano = '2021')
-df_6 = scraping(df_6, mes_1 = 'Novembro', mes_2 = 'Dezembro', ano = '2021')
+df_1 = scraping(df_1, mes_1 = 'Janeiro', mes_2 = 'Fevereiro', ano = f'{Ano}')
+df_2 = scraping(df_2, mes_1 = 'Março', mes_2 = 'Abril', ano = f'{Ano}')
+df_3 = scraping(df_3, mes_1 = 'Maio', mes_2 = 'Junho', ano = f'{Ano}')
+df_4 = scraping(df_4, mes_1 = 'Julho', mes_2 = 'Agosto', ano = f'{Ano}')
+df_5 = scraping(df_5, mes_1 = 'Setembro', mes_2 = 'Outubro', ano = f'{Ano}')
+df_6 = scraping(df_6, mes_1 = 'Novembro', mes_2 = 'Dezembro', ano = f'{Ano}')
 print('\nAs funções foram executadas com sucesso.')
 
 # Merging into a single DataFrame
@@ -152,6 +154,6 @@ df_horizontal.sort_values(by = ['Fabricante'], inplace = True, ignore_index = Tr
 df_vertical.sort_values(by = ['Fabricante', 'Modelo'], inplace = True, ignore_index = True)
 
 # Exporting DataFrames in .csv
-df_horizontal.to_csv('Output/DataFrame_Horizontal_2021.csv', sep = ';', encoding = 'UTF-8', index = False)
-df_vertical.to_csv('Output/DataFrame_Vertical_2021.csv', sep = ';', encoding = 'UTF-8', index = False)
+df_horizontal.to_csv(f'Output/DataFrame_Horizontal_{Ano}.csv', sep = ';', encoding = 'UTF-8', index = False)
+df_vertical.to_csv(f'Output/DataFrame_Vertical_{Ano}.csv', sep = ';', encoding = 'UTF-8', index = False)
 print('\nOs DataFrames foram importados com sucesso.\n')
